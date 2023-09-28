@@ -236,27 +236,6 @@ def detectandupdatevideo(video):
 
     return [video, "pred" + video]
 
-@app.route('/detectvideo', methods=['GET', 'POST'])
-@login_required  # Protect this route, requires authentication
-def detectvideo():
-    UPLOAD_FOLDER = 'static'
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    if request.method == 'POST':
-
-        file = request.files['file']
-
-        if file and allowed_file(file.filename):
-
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-            result = detectandupdatevideo(filename)
-            return render_template('showvideo.html', orig=result[0], pred=result[1])
-
-@app.route('/video')
-@login_required  # Protect this route, requires authentication
-def video():
-    return render_template('video.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

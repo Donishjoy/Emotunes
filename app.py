@@ -210,9 +210,9 @@ def detectandupdatevideo(video):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash('Login successful!', 'success')
@@ -221,20 +221,31 @@ def login():
             flash('Login failed. Please check your credentials.', 'danger')
     return render_template('login.html')
 
+email_pattern = r'^[\w\.-]+@[\w\.-]+(\.[\w]+)+$'
+password_pattern = r'^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]{8,}$'
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        email=request.form['email']
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        if user:
-            flash('Username already exists. Please choose another username.', 'danger')
+
+        # Check if the provided username is a valid email address
+        if not re.match(email_pattern, email):
+            flash('Invalid email format. Please provide a valid email address.', 'danger')
+        elif not re.match(password_pattern, password):
+            flash('Password must be at least 8 characters long and contain one capital letter, one number, and one special character.', 'danger')
         else:
-            new_user = User(username=username, password=generate_password_hash(password, method='sha256'))
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Registration successful! You can now login.', 'success')
-            return redirect(url_for('login'))
+            user = User.query.filter_by(email=email).first()
+            if user:
+                flash('Email already exists. Please choose another email address.', 'danger')
+            else:
+                new_user = User(email=email,username=username, password=generate_password_hash(password, method='sha256'))
+                db.session.add(new_user)
+                db.session.commit()
+                flash('Registration successful! You can now login.', 'success')
+                return redirect(url_for('login'))
     return render_template('register.html')
 
 @app.route('/dashboard')

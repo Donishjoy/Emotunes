@@ -146,16 +146,7 @@ def detectpic():
 
 
 
-@app.route('/sentsafe', methods=['GET', 'POST'])
-@login_required  # Protect this route, requires authentication
-def send_sentsafe():
-    if request.method == 'POST':
-        email = request.form['email']
-        comments = request.form['comments']
-        name = request.form['name']
-        comments = email + "  \n " + name + "  \n " + comments
-        send_mail(email, comments)
-    return render_template('sentfeed.html')
+
 
 @socketio.on("message")
 def handleMessage(input):

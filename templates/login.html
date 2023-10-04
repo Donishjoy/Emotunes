@@ -3,8 +3,9 @@
 
 <head>
     <title>EMOTUNES</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='display.css')}}" />
-    <link rel="icon" href="{{url_for('static', filename='eye.png')}}" type="image/png" />
+    <link rel="stylesheet" href="{{url_for('static',filename='display.css')}}" />
+    <link rel="icon" href="{{url_for('static',filename='eye.png')}}" type="image/png" />
+
     <style>
         body {
             background-image: linear-gradient(90deg, #eeeeee, #eeeeee);
@@ -16,7 +17,8 @@
             justify-content: center;
         }
 
-        
+
+
         .area{
     background: #4e54c8;  
     background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
@@ -154,7 +156,7 @@ body {
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <img class="img_logo" src="{{url_for('static', filename='eye.png')}}" alt="" srcset="">
+                <img class="img_logo" src="{{url_for('static',filename='eye.png')}}" alt="" srcset="">
                 <span class="content_nav">EMOTUNES</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -164,53 +166,50 @@ body {
             <div class="collapse navbar-collapse feedback_" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
     <div class="area" >
-        <ul class="circles">
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-        </ul>
+      <ul class="circles">
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+      </ul>
     <center>
         <div class="flex-container">
             <div class="container">
                 <div class="row align-items-center mar_cards">
                     <div class="col">
                         <div class="card" style="width: 19rem;background:#282b66;color: white;">
-                            <img src="{{url_for('static', filename='EMOTUNES.png')}}" alt="..."
+                            <img src="{{url_for('static',filename='EMOTUNES.png')}}" alt="..."
                                 style="width: 100%; height: 15vw; object-fit: cover;">
                             <div class="card-body">
-                                <h1>Register</h1>
-                                <form method="POST">
+                                <h1>Login</h1>
+                                <form method="POST" class="form-container">
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email ID:</label>
                                         <input type="text" class="form-control" id="email" name="email" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Username:</label>
-                                        <input type="text" class="form-control" id="username" name="username" required>
-                                    </div>
-                                    <div class="mb-3">
                                         <label for="password" class="form-label">Password:</label>
-                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            required>
                                     </div>
                                     <div class="d-grid">
-                                        <input type="submit" class="btn btn-primary" value="Register">
+                                        <input type="submit" class="btn btn-primary" value="Login">
                                     </div>
                                 </form>
-                                <p class="mt-3 text-center">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                                <p class="mt-3 text-center">Don't have an account? <a
+                                        href="{{ url_for('register') }}">Register here</a></p>
                                 <!-- Display flash messages if any -->
                                 {% with messages = get_flashed_messages() %}
                                 {% if messages %}
@@ -228,8 +227,7 @@ body {
             </div>
         </div>
     </center>
-    </div>
-
+</div>
 </body>
 
 </html>

@@ -248,5 +248,16 @@ def register():
             flash('Registration successful! You can now login.', 'success')
             return redirect(url_for('login'))
     return render_template('register.html')
-        hon
+    @app.route('/dashboard')
+@login_required  # Protect this route, requires authentication
+def dashboard():
+    # Add code for the dashboard page here
+    return render_template('home.html',user=current_user)
+
+@app.route('/logout')
+@login_required  # Protect this route, requires authentication
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))
 

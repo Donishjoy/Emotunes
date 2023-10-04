@@ -248,7 +248,8 @@ def register():
             flash('Registration successful! You can now login.', 'success')
             return redirect(url_for('login'))
     return render_template('register.html')
-    @app.route('/dashboard')
+
+@app.route('/dashboard')
 @login_required  # Protect this route, requires authentication
 def dashboard():
     # Add code for the dashboard page here

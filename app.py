@@ -143,10 +143,7 @@ def detectpic():
             result = detectandupdate(filename)
             return render_template('showdetect.html', orig=result[0], pred=result[1])
 
-@app.route('/picdetect')
-@login_required  # Protect this route, requires authentication
-def picdetect():
-    return render_template('picdetect.html')
+
 
 
 @app.route('/sentsafe', methods=['GET', 'POST'])

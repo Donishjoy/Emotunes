@@ -148,10 +148,6 @@ def detectpic():
 def picdetect():
     return render_template('picdetect.html')
 
-@app.route('/feedback')
-@login_required  # Protect this route, requires authentication
-def feedback():
-    return render_template('feedback.html')
 
 @app.route('/sentsafe', methods=['GET', 'POST'])
 @login_required  # Protect this route, requires authentication

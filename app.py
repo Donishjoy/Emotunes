@@ -100,21 +100,7 @@ def bound(boxes, scores, h, w):
             signs[i] = [ymin, ymax, xmin, xmax]
     return signs
 
-def draw_bounding_box(frame, detect_fn):
-    # Returns the coordinates of the bounding boxes.
-    input_tensor = tf.convert_to_tensor(frame)
-    input_tensor = input_tensor[tf.newaxis, ...]
-    detections = detect_fn(input_tensor)
-    num_detections = int(detections.pop('num_detections'))
-    detections = {key: value[0, :num_detections].numpy() for key, value in detections.items()}
-    detections['num_detections'] = num_detections
-    boxes = detections['detection_boxes']
-    scores = detections['detection_scores']
-    h, w = frame.shape[:2]
-    boxes = boxes.tolist()
-    scores = scores.tolist()
-    coordinates = bound(boxes, scores, h, w)
-    return coordinates
+
 
 def detectandupdate(img):
     path = "static/" + str(img)

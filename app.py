@@ -68,14 +68,7 @@ with app.app_context():
 # Define a minimal socketio object
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@app.route('/picdelete')
-def picdelete():
-    # When this function is called, all the files that are not present in the
-    # list static_files will be deleted.
-    for file in os.listdir("static"):
-        if file not in static_files:
-            os.remove(f"static/{file}")
-    return ("nothing")
+
 
 @app.route('/')
 def index():

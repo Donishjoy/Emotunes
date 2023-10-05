@@ -12,20 +12,24 @@ import shutil
 from werkzeug.utils import secure_filename
 from flask import current_app
 from flask import send_file
-from getmail import send_mail
 import warnings
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
+import re
+from flask_migrate import Migrate
+from flask_login import login_required,current_user
+
 
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = secrets.token_hex(16)  # Generate a random secret key
 app.config["DEBUG"] = True
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///emo.db"  # Replace with your database URI
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///emot.db"  # Replace with your database URI
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Configure Flask-Login
 login_manager = LoginManager()
@@ -34,8 +38,9 @@ login_manager.login_view = "login"
 
 # Define a user loader function
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+def load_user(email):
+    # Load the user based on the email address
+    return User.query.get(email)
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 detect_fn = tf.saved_model.load("Models/FaceDetector/saved_model")  # Load the face detector
@@ -46,11 +51,15 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 static_files = ['display.css', 'eye.png', 'Picdetectb.jpg', 'thumbsup.jpg',
                 'github.png', 'IU.svg', 'UI.svg', 'RT.svg', 'UV.svg', 'VU.svg', 'feedback.svg']
 
-# User model for the database
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(128), primary_key=True)  # This should be the primary key
+    username = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    def get_id(self):
+        return self.email
+
+
+
 
 # Create database tables
 with app.app_context():
@@ -59,15 +68,30 @@ with app.app_context():
 # Define a minimal socketio object
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-
+@app.route('/picdelete')
+def picdelete():
+    # When this function is called, all the files that are not present in the
+    # list static_files will be deleted.
+    for file in os.listdir("static"):
+        if file not in static_files:
+            os.remove(f"static/{file}")
+    return ("nothing")
 
 @app.route('/')
-def home():
-    return render_template('home.html')
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/webcam')
 def webcam():
     return render_template('index.html')
+
+@app.route('/webcam_capture')
+@login_required
+def webcam_capture():
+    return render_template('capture_image.html')
 
 def allowed_file(filename):
     return ('.' in filename and
@@ -93,7 +117,21 @@ def bound(boxes, scores, h, w):
             signs[i] = [ymin, ymax, xmin, xmax]
     return signs
 
-
+def draw_bounding_box(frame, detect_fn):
+    # Returns the coordinates of the bounding boxes.
+    input_tensor = tf.convert_to_tensor(frame)
+    input_tensor = input_tensor[tf.newaxis, ...]
+    detections = detect_fn(input_tensor)
+    num_detections = int(detections.pop('num_detections'))
+    detections = {key: value[0, :num_detections].numpy() for key, value in detections.items()}
+    detections['num_detections'] = num_detections
+    boxes = detections['detection_boxes']
+    scores = detections['detection_scores']
+    h, w = frame.shape[:2]
+    boxes = boxes.tolist()
+    scores = scores.tolist()
+    coordinates = bound(boxes, scores, h, w)
+    return coordinates
 
 def detectandupdate(img):
     path = "static/" + str(img)
@@ -118,12 +156,6 @@ def detectandupdate(img):
     cv2.imwrite(path2, image)
 
     return [img, "pred" + img]
-
-
-
-
-
-
 
 
 @socketio.on("message")
@@ -185,6 +217,7 @@ def detectandupdatevideo(video):
     return [video, "pred" + video]
 
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -200,7 +233,7 @@ def login():
     return render_template('login.html')
 
 email_pattern = r'^[\w\.-]+@[\w\.-]+(\.[\w]+)+$'
-password_pattern = r'^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]{8,}$'
+password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -226,6 +259,8 @@ def register():
                 return redirect(url_for('login'))
     return render_template('register.html')
 
+
+
 @app.route('/dashboard')
 @login_required  # Protect this route, requires authentication
 def dashboard():
@@ -239,3 +274,5 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
+if __name__ == "__main__":
+    socketio.run(app)

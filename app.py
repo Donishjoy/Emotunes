@@ -59,14 +59,7 @@ with app.app_context():
 # Define a minimal socketio object
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@app.route('/picdelete')
-def picdelete():
-    # When this function is called, all the files that are not present in the
-    # list static_files will be deleted.
-    for file in os.listdir("static"):
-        if file not in static_files:
-            os.remove(f"static/{file}")
-    return ("nothing")
+
 
 @app.route('/')
 def home():
@@ -126,22 +119,7 @@ def detectandupdate(img):
 
     return [img, "pred" + img]
 
-@app.route('/detectpic', methods=['GET', 'POST'])
-@login_required  # Protect this route, requires authentication
-def detectpic():
-    UPLOAD_FOLDER = 'static'
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    if request.method == 'POST':
 
-        file = request.files['file']
-
-        if file and allowed_file(file.filename):
-
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-            result = detectandupdate(filename)
-            return render_template('showdetect.html', orig=result[0], pred=result[1])
 
 
 

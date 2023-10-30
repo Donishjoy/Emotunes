@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import secrets
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(_name_, static_url_path='/static')
 app.config["SECRET_KEY"] = secrets.token_hex(16)   # Replace 'your_secret_key' with your actual secret key
 
 # Configure the SQLite database
@@ -200,5 +200,5 @@ def home():
     # Add code for the dashboard page here
     return render_template('home.html',user=current_user)
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(debug=True)

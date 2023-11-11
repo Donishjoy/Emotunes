@@ -4,7 +4,7 @@
   <title>EMOTUNES</title>
   <link rel="stylesheet" href="{{url_for('static',filename='display.css')}}" />
   <link rel="icon" href="{{url_for('static',filename='eye.png')}}" type="image/png" />
-
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
@@ -134,7 +134,105 @@
             width: 30%; /* Adjust as needed */
             margin: 10px;
             text-align: center;
+            
         }
+
+        .nav-link {
+        transition: background-color 0.1s, border-radius 0.1s, font-weight 0.3s, color 0.s;
+    }
+        .nav-item:hover
+        {
+          background-color: orange;
+          border-radius:30px;
+          font-weight: bold;
+          color: azure;
+        }
+
+        .container {
+      text-align: center;
+    }
+
+    .tracks-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .track {
+      width: 30%;
+      /* Adjust as needed */
+      margin: 10px;
+      text-align: center;
+    }
+
+    .tracks-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .track {
+      width: 260px;
+      /* Adjust as needed */
+      margin: 10px;
+      text-align: center;
+      border: 1px solid black;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #eeeeee;
+      border:3px solid salmon
+    }
+
+    .track-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .track-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .track-artist {
+      font-size: 16px;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .play-button {
+      position: inline-block;
+      bottom: 10px;
+      right: 10px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .play-button i {
+      font-size: 20px;
+      color: rgb(24, 161, 0);
+    }
+    .play-button:hover{
+      color: red;
+    }
+
+    .nav-link {
+      transition: background-color 0.1s, border-radius 0.1s, font-weight 0.3s, color 0.1s;
+    }
+
+    .nav-item:hover {
+      background-color: orange;
+      border-radius: 30px;
+      font-weight: bold;
+      color: azure;
+    }
+
   </style>
 </head>
 <!-- The rest of your HTML code remains the same -->
@@ -142,7 +240,7 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{{url_for('dashboard')}}">
+      <a class="navbar-brand" href="">
         <img class="img_logo" src="{{url_for('static',filename='eye.png')}}" alt="" srcset="">
         <span class="content_nav">
           EMOTUNES
@@ -154,8 +252,20 @@
       </button>
       <div class="collapse navbar-collapse feedback_" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item">
-            <span style="color: green; font-size: medium; font-style: italic;">Welcome,</span>
+          <li class="nav-item active" style="margin-right: 30px;">
+            <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item" style="margin-right: 30px;">
+            <a class="nav-link" href="/add_song">Add Songs</a>
+          </li>
+          <li class="nav-item" style="margin-right: 30px;">
+            <a class="nav-link" href="/songs">My Playlist</a>
+          </li>
+          <li >
+            <span style="color: green; font-size: medium; font-style: italic;margin-right: 30px;">Welcome,{{ user.username }}</span>
+          </li>
+          <li style="margin-right: 30px;">
+           <a href="/logout" ><img class="img_logo" src="{{url_for('static',filename='logout.png')}}" style="height:30px;width:30px;" alt="" srcset=""></a>
           </li>
         </ul>
       </div>
@@ -197,9 +307,54 @@
               Track 3
             </div>
             <!-- Add more track divs as needed -->
-          </div>
+          </div><br><br>
+
         </div>
+<br><br>
+
+        <h4 style="text-align: center;">Your songs</h4>
+        <div class="row">
+            <div class="tracks-container" id="home-html">
+                <!-- This container will be populated with the generated song HTML -->
+            </div>
+        </div>
+
+
+
+      <div class="row">
+        <div class="tracks-container" id="tracks-html">
+          {% for song in home %}
+          <div class="track">
+            
+            <img class="track-image" src="../static/cd.gif" alt="{{ song.title }}">
+            <h3 class="track-title">{{ song.title }}</h3>
+            <p class="track-artist">{{ song.singer }}</p>
+            <p class="track-artist">{{ song.emotion }}</p>
+            <!-- Rating Icons -->
+            <div class="rating-icons">
+              {% set rating = song.rating|int %}
+              {% for _ in range(rating) %}
+              <i class="fas fa-star" style="color: gold;"></i>
+              {% endfor %}
+            </div>
+            <button type="button" class="play-button">
+              <i class="fas fa-play"></i> <!-- Added "fa-lg" to set the icon size -->
+            </button>
+            <button type="button" class="delete-button" data-song-id="{{ song.id }}">
+              <i class="fas fa-trash" style="color: red;"></i>
+            </button>
+            <audio hidden controls>
+              <source src="{{ song.song_path }}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+          {% endfor %}
+        </div>
+        
       </div>
+      
+      
+    
       
     </center>
     <br><br><br><br><br>
@@ -215,47 +370,83 @@
   const captureButton = document.getElementById('captureButton');
   const video = document.getElementById('captured-video');
   const canvas = document.getElementById('captured-canvas');
-  
+  const homeHtmlContainer = document.getElementById('home-html'); // Get the home-html container
+
   captureButton.addEventListener('click', async () => {
-      try {
-          // Get access to the webcam stream
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
+    try {
+        // Get access to the webcam stream
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
 
-          // Wait for the video to load
-          await new Promise((resolve) => {
-              video.onloadeddata = resolve;
-          });
+        // Wait for the video to load
+        await new Promise((resolve) => {
+            video.onloadeddata = resolve;
+        });
 
-          // Capture a snapshot from the video
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Capture a snapshot from the video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
-          // Convert the canvas to a Blob
-          canvas.toBlob(async (blob) => {
-              // Create a FormData object and append the blob as 'picture'
-              const formData = new FormData();
-              formData.append('picture', blob, 'image.jpg');
+        // Convert the canvas to a Blob
+        canvas.toBlob(async (blob) => {
+            // Create a FormData object and append the blob as 'picture'
+            const formData = new FormData();
+            formData.append('picture', blob, 'image.jpg');
 
-              // Send the image to the Flask server
-              const response = await fetch('/', {
-                  method: 'POST',
-                  body: formData
-              });
+            // Send the image to the Flask server
+            const response = await fetch('/', {
+                method: 'POST',
+                body: formData
+            });
 
-              const data = await response.json();
+            const data = await response.json();
 
-              // Update the emotion and track sections
-              const emotionHtml = document.getElementById('emotion-html');
-              emotionHtml.innerHTML = data.emotion_html;
+            // Update the emotion and track sections
+            const emotionHtml = document.getElementById('emotion-html');
+            emotionHtml.innerHTML = data.emotion_html;
 
-              const trackHtml = document.getElementById('track-html');
-              trackHtml.innerHTML = data.track_html;
-          }, 'image/jpeg');
-      } catch (error) {
-          console.error(error);
-      }
-  });
+            const trackHtml = document.getElementById('track-html');
+            trackHtml.innerHTML = data.track_html;
+
+            // Generate HTML for each song in the 'home' data
+            const songHtmlList = data.song_html_list;
+
+            // Clear the existing content in the home-html container
+            const homeHtmlContainer = document.getElementById('home-html');
+            homeHtmlContainer.innerHTML = '';
+
+            // Insert the generated song HTML into the home-html container
+            songHtmlList.forEach(songHtml => {
+                homeHtmlContainer.innerHTML += songHtml;
+            });
+        }, 'image/jpeg');
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+
+const playButtons = document.querySelectorAll('.play-button');
+    const deleteButtons = document.querySelectorAll('.delete-button');
+
+    playButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        console.log('clicked')
+        const audioElement = button.closest('.track').querySelector('audio');
+
+        if (audioElement.paused) {
+          audioElement.play();
+          button.querySelector('i').classList.remove('fa-play');
+          button.querySelector('i').classList.add('fa-pause');
+        } else {
+          audioElement.pause();
+          button.querySelector('i').classList.remove('fa-pause');
+          button.querySelector('i').classList.add('fa-play');
+        }
+      });
+    });
+
+
 </script>
 </html>

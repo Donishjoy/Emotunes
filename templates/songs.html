@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>EMOTUNES</title>
+  <link rel="stylesheet" href="{{url_for('static',filename='display.css')}}" />
+  <link rel="icon" href="{{url_for('static',filename='eye.png')}}" type="image/png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <style>
+    /* Your custom CSS styles */
+    body {
+      background-image: linear-gradient(90deg, #eeeeee, #eeeeee);
+    }
+
+    .flex-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .area {
+      background: #4e54c8;
+      background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
+      width: 100%;
+      height: 100%;
+    }
+
+    .circles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .circles li {
+      position: absolute;
+      display: block;
+      list-style: none;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      animation: animate 25s linear infinite;
+      bottom: -150px;
+    }
+
+    .circles li:nth-child(1) {
+      left: 25%;
+      width: 80px;
+      height: 80px;
+      animation-delay: 0s;
+    }
+
+    .circles li:nth-child(2) {
+      left: 10%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 2s;
+      animation-duration: 12s;
+    }
+
+    .circles li:nth-child(3) {
+      left: 70%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 4s;
+    }
+
+    .circles li:nth-child(4) {
+      left: 40%;
+      width: 60px;
+      height: 60px;
+      animation-delay: 0s;
+      animation-duration: 18s;
+    }
+
+    .circles li:nth-child(5) {
+      left: 65%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 0s;
+    }
+
+    .circles li:nth-child(6) {
+      left: 75%;
+      width: 110px;
+      height: 110px;
+      animation-delay: 3s;
+    }
+
+    .circles li:nth-child(7) {
+      left: 35%;
+      width: 150px;
+      height: 150px;
+      animation-delay: 7s;
+    }
+
+    .circles li:nth-child(8) {
+      left: 50%;
+      width: 25px;
+      height: 25px;
+      animation-delay: 15s;
+      animation-duration: 45s;
+    }
+
+    .circles li:nth-child(9) {
+      left: 20%;
+      width: 15px;
+      height: 15px;
+      animation-delay: 2s;
+      animation-duration: 35s;
+    }
+
+    .circles li:nth-child(10) {
+      left: 85%;
+      width: 150px;
+      height: 150px;
+      animation-delay: 0s;
+      animation-duration: 11s;
+    }
+
+    @keyframes animate {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+      }
+
+      100% {
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+      }
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .tracks-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .track {
+      width: 30%;
+      /* Adjust as needed */
+      margin: 10px;
+      text-align: center;
+    }
+
+    .tracks-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .track {
+      width: 180px;
+      /* Adjust as needed */
+      margin: 10px;
+      text-align: center;
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+    .track-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .track-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .track-artist {
+      font-size: 16px;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .play-button {
+      position: inline-block;
+      bottom: 10px;
+      right: 10px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .play-button i {
+      font-size: 20px;
+      color: rgb(24, 161, 0);
+    }
+
+    .nav-link {
+      transition: background-color 0.1s, border-radius 0.1s, font-weight 0.3s, color 0.1s;
+    }
+
+    .nav-item:hover {
+      background-color: orange;
+      border-radius: 30px;
+      font-weight: bold;
+      color: azure;
+    }
+  </style>
+</head>
+<!-- The rest of your HTML code remains the same -->
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{url_for('dashboard')}}">
+        <img class="img_logo" src="{{url_for('static',filename='eye.png')}}" alt="" srcset="">
+        <span class="content_nav">
+          EMOTUNES
+        </span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse feedback_" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active" style="margin-right: 30px;">
+            <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item" style="margin-right: 30px;">
+            <a class="nav-link" href="/add_song">Add Songs</a>
+          </li>
+          <li class="nav-item">
+            <span style="color: green; font-size: medium; font-style: italic;margin-right: 30px;">Welcome,{{
+              user.username }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <body>
+    <div class="tracks-container">
+      {% for song in songs %}
+      <div class="track">
+        <img class="track-image" src="../static/cd.gif" alt="{{ song.title }}">
+        <h3 class="track-title">{{ song.title }}</h3>
+        <p class="track-artist">{{ song.singer }}</p>
+        <p class="track-artist">{{ song.emotion }}</p>
+        <!-- Rating Icons -->
+        <div class="rating-icons">
+          {% set rating = song.rating|int %}
+          {% for _ in range(rating) %}
+          <i class="fas fa-star" style="color: gold;"></i>
+          {% endfor %}
+        </div>
+        <button type="button" class="play-button">
+          <i class="fas fa-play"></i> <!-- Added "fa-lg" to set the icon size -->
+        </button>
+        <button type="button" class="delete-button" data-song-id="{{ song.id }}">
+          <i class="fas fa-trash" style="color: red;"></i>
+        </button>
+        <audio hidden controls>
+          <source src="{{ song.song_path }}" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+
+
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+  <script>
+    const playButtons = document.querySelectorAll('.play-button');
+    const deleteButtons = document.querySelectorAll('.delete-button');
+
+    playButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const audioElement = button.closest('.track').querySelector('audio');
+
+        if (audioElement.paused) {
+          audioElement.play();
+          button.querySelector('i').classList.remove('fa-play');
+          button.querySelector('i').classList.add('fa-pause');
+        } else {
+          audioElement.pause();
+          button.querySelector('i').classList.remove('fa-pause');
+          button.querySelector('i').classList.add('fa-play');
+        }
+      });
+    });
+
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const songId = button.dataset.songId;
+        // Make an AJAX request to delete the song
+        fetch(`/delete/${songId}`, { method: 'POST' })
+          .then(response => {
+            if (response.ok) {
+              // If the response is OK (status code 200), remove the deleted song from the page
+              const trackToDelete = button.closest('.track');
+              trackToDelete.remove();
+              // Optionally, show a success message
+              alert('Song has been deleted.');
+            } else {
+              // Handle the case where the server returns an error
+              alert('Error deleting song. Please try again.');
+            }
+          })
+          .catch(error => {
+            console.error('Error deleting song:', error);
+          });
+      });
+    });
+
+  </script>
+
+</html>

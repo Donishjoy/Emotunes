@@ -18,7 +18,7 @@ app = Flask(__name__, static_url_path='/static')
 app.config["SECRET_KEY"] = secrets.token_hex(16)   # Replace 'your_secret_key' with your actual secret key
 
 # Configure the SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///songs.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///emotune.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # Configure Flask-Login
@@ -30,7 +30,7 @@ login_manager.login_view = "login"
 @login_manager.user_loader
 def load_user(email):
     # Load the user based on the email address
-    return db.session.query(User).get(email)
+    return User.query.get(email)
 # Define a database model for songs
 class Song(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -237,7 +237,7 @@ def allowed_file(filename):
 @login_required 
 def songs():
     try:
-        songs = Song.query.filter_by(email=current_user.email).all()
+        songs = Song.query.all()
         return render_template("songs.html", songs=songs,user=current_user)
     except Exception as e:
         print(f"Error retrieving songs: {str(e)}")

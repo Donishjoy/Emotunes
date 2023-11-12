@@ -14,7 +14,7 @@ from mutagen import File
 import eyed3
 import sys
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(_name_, static_url_path='/static')
 app.config["SECRET_KEY"] = secrets.token_hex(16)   # Replace 'your_secret_key' with your actual secret key
 
 # Configure the SQLite database
@@ -57,39 +57,6 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(email):
     return User.query.get(email)
-
-
-# @app.route("/", methods=["GET", "POST"])
-# def index():
-#     top_data = []  # Initialize top data array
-#     home_data = []  # Initialize home data array
-
-#     if request.method == "POST":
-#         try:
-#             if "picture" in request.files:
-#                 picture = request.files["picture"]
-#                 image = Image.open(picture)
-#                 pixels = np.array(image)
-#                 emotion = UTILS.detect_emotion(pixels)
-
-#                 if emotion:
-#                     # Fetch dataset data for "top" array
-#                     top_data = UTILS.get_top_k(emotion)
-#                     emotion_html = populate_emotion(emotion)
-#                     track_html = populate_tracks(top_data)
-                    
-#                     # Fetch and populate database data for "home" array
-#                     home_data = fetch_songs_and_populate_tracks(emotion)
-#                     session['songs_data'] = home_data
-#                     print("home", home_data)
-#                     print("top", top_data)
-                    
-#                     return jsonify(emotion_html=emotion_html, track_html=track_html, top=top_data, home=home_data)
-
-#         except Exception as e:
-#             print(f"Error processing image: {str(e)}")
-#     print("home", home_data)
-#     return render_template("home.html", user=current_user, top=top_data, home=home_data)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -243,6 +210,63 @@ def songs():
         print(f"Error retrieving songs: {str(e)}")
         return "An error occurred while retrieving songs."
     
+    
+    
+#edit songs
+@app.route("/edit_song/<int:song_id>", methods=["GET", "POST"])
+@login_required
+def edit_song(song_id):
+    # Fetch the song from the database based on the song_id
+    song = Song.query.get(song_id)
+
+    if song is None or song.email != current_user.email:
+        # Check if the song exists or if the current user has permission to edit it
+        return redirect(url_for("songs"))
+
+    if request.method == "POST":
+        try:
+            # Update all song details based on the form data
+            song.title = request.form["title"]
+            song.singer = request.form["singer"]
+            song.emotion = request.form["emotion"]
+            song.rating = float(request.form["rating"])
+
+            # Check if a new song file is provided
+            new_song_file = request.files.get("song_file")
+            if new_song_file and allowed_file(new_song_file.filename):
+                # Save the new song file
+                filename = secure_filename(new_song_file.filename)
+                new_song_path = os.path.join("static", filename)
+                new_song_file.save(new_song_path)
+
+                # Extract album cover image from the new song file
+                audiofile = eyed3.load(new_song_path)
+                if audiofile.tag and audiofile.tag.images:
+                    for image in audiofile.tag.images:
+                        if "image/jpeg" in image.description:
+                            album_cover_data = image.image_data
+                            album_covers_path = os.path.join(app.root_path, "static", "album_covers", filename + '.jpg')
+
+                            with open(album_covers_path, 'wb') as f:
+                                f.write(album_cover_data)
+
+                            print("JPEG album cover saved successfully")
+                        else:
+                            # Handle other image formats or print their descriptions
+                            print(f"Unsupported album cover format: {image.description}")
+
+                # Update the song's file path
+                song.song_path = new_song_path
+
+            # Commit the changes to the database
+            db.session.commit()
+
+            return redirect(url_for("songs"))  # Redirect to the songs page after successful update
+        except Exception as e:
+            print(f"Error editing song in the database: {str(e)}")
+
+    return render_template("editsong.html", user=current_user, songDetails=song)
+    
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -260,7 +284,7 @@ def login():
 
 # Registration route
 email_pattern = r'^[\w\.-]+@[\w\.-]+(\.[\w]+)+$'
-password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+password_pattern = r'^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]{8,}$'
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -320,5 +344,5 @@ def delete_song(song_id):
 
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(debug=True)

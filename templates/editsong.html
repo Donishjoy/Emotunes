@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>EMOTUNES - Edit Song</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='display.css')}}" />
+    <link rel="icon" href="{{url_for('static',filename='eye.png')}}" type="image/png" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <style>
+        /* Your custom CSS styles */
+        body {
+            height: 100%;
+            width: 100%;
+            background-image: linear-gradient(90deg, #eeeeee, #eeeeee);
+        }
+
+        .flex-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .area {
+            background: #4e54c8;
+            background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
+            width: 100%;
+            height: 100%;
+        }
+
+        .circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .circles li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+        }
+
+        .circles li:nth-child(1) {
+            left: 25%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 0s;
+        }
+
+        .circles li:nth-child(2) {
+            left: 10%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+
+        .circles li:nth-child(3) {
+            left: 70%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 4s;
+        }
+
+        .circles li:nth-child(4) {
+            left: 40%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+
+        .circles li:nth-child(5) {
+            left: 65%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 0s;
+        }
+
+        .circles li:nth-child(6) {
+            left: 75%;
+            width: 110px;
+            height: 110px;
+            animation-delay: 3s;
+        }
+
+        .circles li:nth-child(7) {
+            left: 35%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 7s;
+        }
+
+        .circles li:nth-child(8) {
+            left: 50%;
+            width: 25px;
+            height: 25px;
+            animation-delay: 15s;
+            animation-duration: 45s;
+        }
+
+        .circles li:nth-child(9) {
+            left: 20%;
+            width: 15px;
+            height: 15px;
+            animation-delay: 2s;
+            animation-duration: 35s;
+        }
+
+        .circles li:nth-child(10) {
+            left: 85%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 0s;
+            animation-duration: 11s;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 0;
+            }
+
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .nav-link {
+            transition: background-color 0.1s, border-radius 0.1s, font-weight 0.3s, color 0.1s;
+        }
+
+        .nav-item:hover {
+            background-color: orange;
+            border-radius: 30px;
+            font-weight: bold;
+            color: azure;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{url_for('dashboard')}}">
+                <img class="img_logo" src="{{url_for('static',filename='eye.png')}}" alt="" srcset="">
+                <span class="content_nav">
+                    EMOTUNES
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse feedback_" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active" style="margin-right: 30px;">
+                        <a class="nav-link" href="/dashboard">Home <span class="sr-only"></span></a>
+                    </li>
+                    <li class="nav-item" style="margin-right: 30px;">
+                        <a class="nav-link" href="/songs">My Playlist</a>
+                    </li>
+                    <li>
+                        <span style="color: green; font-size: medium; font-style: italic;margin-right: 30px;">Welcome,{{
+                            user.username }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="area">
+        <ul class="circles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        
+        <div class="flex-container">
+            <div class="container">
+                <div class="row align-items-center mar_cards">
+                    <div class="col">
+                        <center>
+                            <div class="card" style="height: 900px;width: 400px;margin-bottom: 10%;">
+                                <img src="{{url_for('static',filename='EMOTUNES.png')}}" alt="..."
+                                    style="width: 100%; height: 15vw; object-fit: cover;">
+                                <div class="card-body">
+                                    <h1>EDIT SONG</h1>
+                                    <form method="POST" action="{{ url_for('edit_song', song_id=songDetails.id) }}" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="title" class="form-label">Title:</label>
+                                            <input type="text" class="form-control" id="title" name="title"
+                                                required value="{{ songDetails.title }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="singer" class="form-label">Singer:</label>
+                                            <input type="text" class="form-control" id="singer" name="singer" required
+                                                value="{{ songDetails.singer }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="emotion" class="form-label">Emotion:</label>
+                                            <select class="form-select" id="emotion" name="emotion" required>
+                                                <option value="Angry" {% if songDetails.emotion == 'Angry' %}selected{% endif %}>Angry</option>
+                                                <option value="Happy" {% if songDetails.emotion == 'Happy' %}selected{% endif %}>Happy</option>
+                                                <option value="Surprise" {% if songDetails.emotion == 'Surprise' %}selected{% endif %}>Surprise</option>
+                                                <option value="Sad" {% if songDetails.emotion == 'Sad' %}selected{% endif %}>Sad</option>
+                                                <option value="Fear" {% if songDetails.emotion == 'Fear' %}selected{% endif %}>Fear</option>
+                                                <option value="Disgust" {% if songDetails.emotion == 'Disgust' %}selected{% endif %}>Disgust</option>
+                                                <option value="Neutral" {% if songDetails.emotion == 'Neutral' %}selected{% endif %}>Neutral</option>
+                                                <!-- Add similar options for other emotions -->
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="rating" class="form-label">Rating:</label>
+                                            <input class="form-control" type="number" id="rating" name="rating" min="0" max="10"
+                                                step="0.1" required value="{{ songDetails.rating }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="song_file" class="form-label">Song File:</label>
+                                            <input class="form-control" type="file" id="song_file" name="song_file"
+                                                accept=".mp3, .wav, .ogg, .flac">
+                                        </div>
+
+                                        <div class="d-grid">
+                                            <input type="submit" class="btn btn-primary" value="Update">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

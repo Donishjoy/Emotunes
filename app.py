@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
 import UTILS
 import numpy as np
+import pandas as pd
 import os
 from werkzeug.utils import secure_filename
 from flask_migrate import Migrate

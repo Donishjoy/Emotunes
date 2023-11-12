@@ -257,7 +257,7 @@
         <img class="track-image" src="../static/cd.gif" alt="{{ song.title }}">
         <h3 class="track-title">{{ song.title }}</h3>
         <p class="track-artist">{{ song.singer }}</p>
-        <p class="track-artist">{{ song.emotion }}</p>
+        <p class="track-artist">{{ song.emotion }}{{ song.email }}</p>
         <!-- Rating Icons -->
         <div class="rating-icons">
           {% set rating = song.rating|int %}
@@ -270,6 +270,9 @@
         </button>
         <button type="button" class="delete-button" data-song-id="{{ song.id }}">
           <i class="fas fa-trash" style="color: red;"></i>
+        </button>
+        <button type="button" class="edit-button" data-song-id="{{ song.id }}">
+          <i class="fas fa-edit" style="color: red;"></i>
         </button>
         <audio hidden controls>
           <source src="{{ song.song_path }}" type="audio/mpeg">
@@ -305,7 +308,7 @@
       button.addEventListener('click', () => {
         const songId = button.dataset.songId;
         // Make an AJAX request to delete the song
-        fetch(`/delete/${songId}`, { method: 'POST' })
+        fetch(/delete/${songId}, { method: 'POST' })
           .then(response => {
             if (response.ok) {
               // If the response is OK (status code 200), remove the deleted song from the page
@@ -324,6 +327,20 @@
       });
     });
 
+
+    document.addEventListener('DOMContentLoaded', function () {
+    var editButtons = document.querySelectorAll('.edit-button');
+
+    editButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        // Get the song ID from the data attribute
+        var songId = button.getAttribute('data-song-id');
+
+        // Redirect to the edit song page with the song ID
+        window.location.href = '/edit_song/' + songId;
+      });
+    });
+  });
   </script>
 
 </html>

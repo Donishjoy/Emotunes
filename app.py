@@ -14,7 +14,7 @@ from mutagen import File
 import eyed3
 import sys
 
-app = Flask(_name_, static_url_path='/static')
+app = Flask(__name__, static_url_path='/static')
 app.config["SECRET_KEY"] = secrets.token_hex(16)   # Replace 'your_secret_key' with your actual secret key
 
 # Configure the SQLite database
@@ -60,6 +60,7 @@ def load_user(email):
 
 
 @app.route("/", methods=["GET", "POST"])
+@login_required 
 def index():
     top_data = []  # Initialize top data array
     home_data = []  # Initialize home data array
@@ -81,14 +82,14 @@ def index():
                     # Fetch and populate database data for "home" array
                     home_data = fetch_songs_and_populate_tracks(emotion)
                     session['songs_data'] = home_data
-                    print("track",track_html)
-                    print("top", top_data)
-                    print("home", home_data)
+                    # print("track",track_html)
+                    # print("top", top_data)
+                    # print("home", home_data)
                     home_html ="<div><p>help</p></div>"
                     
                     # Generate HTML for each song in the 'home' data
                     song_html_list = [generate_song_html(song) for song in home_data]
-                    print("html",song_html_list)
+                    # print("html",song_html_list)
                     return jsonify(emotion_html=emotion_html, track_html=track_html, top=top_data, song_html_list=song_html_list)
 
         except Exception as e:
@@ -98,6 +99,8 @@ def index():
 
 def generate_song_html(song):
     # ... Your existing code ...
+    modified_path = song['song_path'].replace('static\\', 'static/')
+
     song_html = f"""
     <div class="track">
         <img class="track-image" src="../static/cd.gif" alt="{song['title']}">
@@ -108,15 +111,21 @@ def generate_song_html(song):
         <div class="rating-icons">
             {''.join(['<i class="fas fa-star" style="color: gold;"></i>' for _ in range(int(song['rating']))])}
             <br>
-           
-        </div> <button type="button" class="play-button"  data-song-path="{song['song_path']}">
-                <i class="fas fa-play"></i>
-            </button>
-        
+        </div>
+        <div id="{modified_path}">
+        <audio hidden controls>
+          <source src="{modified_path}" type="audio/mpeg">
+        </audio>
+        <button type="button" class="play-button" onclick="playfn('{modified_path}')" title="hll">
+            <i class="fas fa-play"></i>
+        </button>
+        </div>
         <!-- You can add more content as needed -->
     </div>
     """
     return song_html
+
+
 
 
 
@@ -205,6 +214,7 @@ def allowed_file(filename):
 def songs():
     try:
         songs = Song.query.all()
+        print(songs[0].song_path)
         return render_template("songs.html", songs=songs,user=current_user)
     except Exception as e:
         print(f"Error retrieving songs: {str(e)}")
@@ -284,7 +294,7 @@ def login():
 
 # Registration route
 email_pattern = r'^[\w\.-]+@[\w\.-]+(\.[\w]+)+$'
-password_pattern = r'^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]{8,}$'
+password_pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -308,6 +318,36 @@ def register():
                 return redirect(url_for('login'))
     return render_template('register.html')
 
+
+#forgotpassword
+# ... (previous code)
+
+@app.route('/forgotpassword', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        new_password = request.form['newpassword']
+        username = request.form['username']
+
+        if not re.match(email_pattern, email):
+            flash('Invalid email format. Please provide a valid email address.', 'danger')
+        elif not re.match(password_pattern, new_password):
+            flash('Password must be at least 8 characters long and contain one capital letter, one number, and one special character.', 'danger')
+        else:
+            # Update the user's password
+            user = User.query.filter_by(email=email, username=username).first()
+            if user:
+                user.password = generate_password_hash(new_password, method='sha256')
+                db.session.commit()
+
+                flash('Password reset successfully! You can now login with your new password.', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Invalid email or username. Please enter the correct credentials.', 'danger')
+
+    return render_template('resetpassword.html')
+
+# ... (remaining code)
 
 
 # Logout route (protected, requires login)
@@ -344,5 +384,5 @@ def delete_song(song_id):
 
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(debug=True)
